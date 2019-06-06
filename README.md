@@ -5,23 +5,23 @@ A guide walking through creating a Postgres database and examples of using Yoyo 
 `$ pip install -r requirements.txt`
 
 ## Create Postgres Database
-Install Postgres:
+#### Install Postgres:
 
 `$ sudo apt-get update`
 
 `$ sudo apt-get install postgresql`
 
-Create test database and set password:
+#### Create test database and set password:
 
 `$ sudo -u postgres psql -c "ALTER USER postgres PASSWORD 'postgres';"`
 
 `$ sudo -u postgres psql -c "CREATE DATABASE testdb;"`
 
-Start postgres server and connect to it:
+#### Start postgres server and connect to it:
 
 `$ sudo service postgresql start`
 
-Setup connection config:
+#### Setup connection config:
 ```
 $ echo "[local]\n\ 
 host=127.0.0.1\n\ 
@@ -31,11 +31,11 @@ password=postgres\n\
 port=5432" >> ~/.pg_service.conf
 ```
 
-Connect to Postgres local server:
+#### Connect to Postgres local server:
 
 `$ psql service=local`
 
-Confirm database is empty:
+#### Confirm database is empty:
 ```
 $ testdb=# \d
 
@@ -44,7 +44,7 @@ Did not find any relations.
 
 
 ## Migration 1: Create Table
-Make the create-table migration script with yoyo:
+#### Make the create-table migration script with yoyo:
 
 `$ yoyo new ./migrations -m "CREATE TABLE users (id INT, name VARCHAR(20), PRIMARY KEY (id)"`
 
@@ -72,11 +72,11 @@ This is saved in plain text and contains your database password.
 Answering 'y' means you do not have to specify the migration source or database connection for future runs [yn]: y
 ```
 
-Apply migration:
+#### Apply migration:
 
 `$ yoyo apply --database postgresql://postgres:postgres@localhost/testdb ./migrations`
 
-Confirm table creation:
+#### Confirm table creation:
 
 `$ psql service=local` 
 
@@ -101,7 +101,7 @@ testdb=# select * from users;
 ```
 
 ## Migration 2: Add Column to Table
-Create migration file for new column:
+#### Create migration file for new column:
 
 `$ yoyo new ./migrations -m "Add age column to users table"`
 
@@ -121,7 +121,7 @@ steps = [
 ]
 ```
 
-Apply migration:
+#### Apply migration:
 
 `$ yoyo apply --database postgresql://postgres:postgres@localhost/testdb ./migrations`
 
@@ -176,7 +176,7 @@ steps = [
 ]       
 ```
 
-Run rollback of the add column step:
+#### Run rollback of the add column step:
 
 `$ yoyo rollback --database postgresql://postgres:postgres@localhost/testdb ./migrations`
 
@@ -192,7 +192,7 @@ Selected 1 migration:
 Rollback this migration to postgresql://postgres:postgres@localhost/testdb [Yn]: Y
 ```
 
-Confirm that the column has been removed:
+#### Confirm that the column has been removed:
 `$ testdb=# \d+ users;`
 
 ```
@@ -214,7 +214,7 @@ You can also check the `_yoyo_migration` table to confirm which migrations have 
 (1 row)
 ```
 
-Rollbacks can also explicitly define a migation id to revert:
+#### Rollback a specific migation:
 
 `yoyo rollback --database postgresql://postgres:postgres@localhost/testdb ./migrations -r 20190604_01_Vra0v-create-users-table`
 
